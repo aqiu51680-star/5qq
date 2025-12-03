@@ -1,20 +1,78 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 5qq — Local dev & Vercel deployment
 
-# Run and deploy your AI Studio app
+This repository is a Vite + React + Supabase app. Below are concise instructions to run locally and deploy to Vercel.
 
-This contains everything you need to run your app locally.
+## Required environment variables
 
-View your app in AI Studio: https://ai.studio/apps/drive/1YNprlKS9gmjt1qDi9vyX0mI9GwU1c-hP
+- `VITE_SUPABASE_URL` — your Supabase project URL (e.g. `https://xyzabc.supabase.co`)
+- `VITE_SUPABASE_ANON_KEY` — your Supabase anon/public key
 
-## Run Locally
+These variables must be available at build time (Vite) and runtime. Locally, create a `.env.local` file in the project root with:
 
-**Prerequisites:**  Node.js
+```ini
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...your_anon_key...
+```
 
+## Run locally
+
+Prerequisites: Node.js (16+ recommended)
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+
+```bash
+npm install
+```
+
+2. Add `.env.local` as shown above.
+
+3. Start the dev server:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+If the app cannot find the Supabase variables it will render a helpful configuration screen (instead of a white page) describing the required keys.
+
+## Deploy to Vercel (recommended)
+
+1. Connect the GitHub repository to Vercel (if you haven't already).
+
+2. In the Vercel Dashboard, open your project → **Settings** → **Environment Variables** and add the two keys:
+
+   - `VITE_SUPABASE_URL` → your Supabase URL
+   - `VITE_SUPABASE_ANON_KEY` → your Supabase anon key
+
+   Add them for the appropriate environments (Preview and Production).
+
+3. Trigger a redeploy (Deployments → Redeploy) or push a new commit to `main`.
+
+### Vercel CLI alternative
+
+If you prefer CLI:
+
+```bash
+npm i -g vercel
+vercel login
+vercel env add VITE_SUPABASE_URL production
+vercel env add VITE_SUPABASE_ANON_KEY production
+vercel --prod
+```
+
+## Notes & Troubleshooting
+
+- Do NOT use the Tailwind CDN in production — the project builds Tailwind via PostCSS. We removed the CDN include from `index.html` so the bundled CSS is used instead.
+- If you see `Supabase URL or Key not found` or `supabaseUrl is required`, confirm the environment variables are set in Vercel and that the redeploy completed.
+- After deployment, open the browser console and Vercel build logs for errors. If the app shows a configuration screen on the deployed site, it means the env vars are missing at build time.
+
+## Quick checklist
+
+- [ ] `VITE_SUPABASE_URL` added to Vercel env
+- [ ] `VITE_SUPABASE_ANON_KEY` added to Vercel env
+- [ ] Redeploy on Vercel
+
+If you'd like, I can:
+- Walk you through setting the variables in the Vercel Dashboard step-by-step, or
+- Provide the exact CLI commands for your environment.
