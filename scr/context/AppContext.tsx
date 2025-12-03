@@ -542,12 +542,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         // Try upserting; if PostgREST complains about unknown columns (schema cache), remove them and retry.
         let attemptData: any = { id: 'default', ...dbData };
         let lastError: any = null;
+        const strippedColumns: string[] = [];
         for (let attempt = 0; attempt < 5; attempt++) {
           const { data: upserted, error } = await supabase.from('app_content').upsert(attemptData, { returning: 'representation' });
           if (!error) {
             // eslint-disable-next-line no-console
             console.log('[AppContext] updateAppContent upserted:', upserted || attemptData);
             lastError = null;
+            if (strippedColumns.length > 0) {
+              setAdminNotification({
+                message: `Saved, but removed unknown fields: ${strippedColumns.join(', ')}. To persist them permanently, run the migration at /scripts/migrations/001_add_app_content_typography.sql`,
+                type: 'info',
+                timestamp: Date.now()
+              });
+            }
             break;
           }
           lastError = error;
@@ -560,10 +568,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               // remove the offending column from attemptData
               // eslint-disable-next-line no-console
               console.warn('[AppContext] updateAppContent: removing unknown column from payload and retrying:', col);
-              if (col in attemptData) delete attemptData[col];
+              if (col in attemptData) { delete attemptData[col]; strippedColumns.push(col); }
               // also try removing as camelCase key just in case
               const camel = col.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
-              if (camel in attemptData) delete (attemptData as any)[camel];
+              if (camel in attemptData) { delete (attemptData as any)[camel]; strippedColumns.push(camel); }
               continue;
             }
           }
