@@ -23,9 +23,9 @@ const INITIAL_SYSTEM_CONFIG: SystemConfig = {
 };
 
 const INITIAL_LEVEL_CONFIGS: LevelConfig[] = [
-  { level: 1, name: 'Member', dailyOrderLimit: undefined, commissionRate: undefined, minBalancePercent: undefined, maxBalancePercent: undefined, specificOrders: [] },
-  { level: 2, name: 'Silver', dailyOrderLimit: 65, commissionRate: 0.025, minBalancePercent: undefined, maxBalancePercent: 0.6, specificOrders: [] },
-  { level: 3, name: 'Gold', dailyOrderLimit: 70, commissionRate: 0.03, minBalancePercent: 0.2, maxBalancePercent: 0.7, specificOrders: [] },
+  { level: 1, name: 'Gói 1', dailyOrderLimit: undefined, commissionRate: undefined, minBalancePercent: undefined, maxBalancePercent: undefined, specificOrders: [] },
+  { level: 2, name: 'Gói 2', dailyOrderLimit: 65, commissionRate: 0.025, minBalancePercent: undefined, maxBalancePercent: 0.6, specificOrders: [] },
+  { level: 3, name: 'Gói 3', dailyOrderLimit: 70, commissionRate: 0.03, minBalancePercent: 0.2, maxBalancePercent: 0.7, specificOrders: [] },
 ];
 
 const INITIAL_APP_CONTENT: AppContent = {
