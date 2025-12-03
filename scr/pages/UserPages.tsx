@@ -30,7 +30,7 @@ useEffect(() => {
 
   const currentLevelConfig = levelConfigs.find(c => c.level === currentUser?.level);
   const effectiveRate = currentUser?.customCommissionRate ?? currentLevelConfig?.commissionRate ?? systemConfig.commissionRate;
-  const levelName = currentLevelConfig?.name || `Level ${currentUser?.level}`;
+    const goiName = currentLevelConfig?.name || `Gói ${currentUser?.level}`;
 
   // Helper for dynamic text size
   const getDynamicFontSize = (sizeClass: string) => {
@@ -98,7 +98,7 @@ useEffect(() => {
             </h3>
             <div className="mt-2 flex items-center space-x-2 text-xs text-blue-100">
               <span className="px-2 py-0.5 bg-green-500/20 rounded text-green-300">+{effectiveRate * 100}% Com.</span>
-              <span>Level {currentUser?.level} ({levelName})</span>
+              <span>Gói {currentUser?.level} ({goiName})</span>
             </div>
           </div>
         </div>
