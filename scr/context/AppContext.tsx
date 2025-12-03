@@ -6,6 +6,14 @@ import { supabase } from '../../supabaseClient';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Detect browser language on app init
+const detectBrowserLanguage = (): 'en' | 'vi' | 'zh' => {
+  const browserLang = navigator.language.split('-')[0].toLowerCase();
+  if (browserLang === 'vi') return 'vi';
+  if (browserLang === 'zh') return 'zh';
+  return 'en';
+};
+
 const INITIAL_SYSTEM_CONFIG: SystemConfig = {
   dailyOrderLimit: 60,
   commissionRate: 0.02,
@@ -86,7 +94,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [registrationCodes, setRegistrationCodes] = useState<RegistrationCode[]>([]);
   const [appContent, setAppContentState] = useState<AppContent>(INITIAL_APP_CONTENT);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [language, setLanguage] = useState<'en' | 'vi' | 'zh'>('vi'); 
+  const [language, setLanguage] = useState<'en' | 'vi' | 'zh'>(detectBrowserLanguage()); 
   const [currency, setCurrency] = useState<Currency>('USD');
   const [isLoading, setIsLoading] = useState(true);
   const [adminNotification, setAdminNotification] = useState<Notification | null>(null);
