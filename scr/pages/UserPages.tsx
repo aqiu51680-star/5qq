@@ -107,9 +107,9 @@ useEffect(() => {
       {/* Marquee */}
       <div className="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 flex items-center space-x-3 overflow-hidden">
         <Bell size={16} className="text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
-        <div className="whitespace-nowrap animate-[marquee_10s_linear_infinite] text-sm text-yellow-800 dark:text-yellow-200">
-          {appContent.marqueeText}
-        </div>
+                <div className="whitespace-nowrap text-sm text-yellow-800 dark:text-yellow-200">
+                    <span className="inline-block animate-[marquee_10s_linear_infinite] px-2">{appContent.marqueeText}</span>
+                </div>
       </div>
 
       {/* Banner */}
@@ -572,8 +572,10 @@ export const UserTransactionsPage: React.FC = () => {
 };
 
 export const UserProfile: React.FC = () => {
-    const { currentUser, logout, language, setTheme, theme, setLanguage, formatPrice } = useApp();
+    const { currentUser, logout, language, setTheme, theme, setLanguage, formatPrice, levelConfigs } = useApp();
     const t = TRANSLATIONS[language];
+    const currentLevelConfig = levelConfigs.find(c => c.level === currentUser?.level);
+    const goiName = currentLevelConfig?.name || `Gói ${currentUser?.level}`;
     const navigate = useNavigate();
 
     if (!currentUser) return null;
@@ -603,7 +605,7 @@ export const UserProfile: React.FC = () => {
                     <h2 className="text-xl font-bold dark:text-white">{currentUser.username}</h2>
                     <p className="text-gray-500 text-sm">{currentUser.phoneNumber}</p>
                     <div className="flex items-center mt-1 space-x-2">
-                       <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full font-bold">Level {currentUser.level}</span>
+                       <span className="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full font-bold">Gói {currentUser.level} ({goiName})</span>
                        <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${currentUser.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{currentUser.status}</span>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ import { ToastContainer, ToastMessage } from '../components/Toast';
 export const Login: React.FC = () => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const { login, currentUser, appContent } = useApp();
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -31,6 +32,11 @@ export const Login: React.FC = () => {
         const success = await login(identifier, password);
         if (success) {
           addToast('Đăng nhập thành công!', 'success');
+          if (rememberMe) {
+            try { localStorage.setItem('remember_identifier', identifier); localStorage.setItem('remember_checked', '1'); } catch (_) {}
+          } else {
+            try { localStorage.removeItem('remember_identifier'); localStorage.removeItem('remember_checked'); } catch (_) {}
+          }
           setTimeout(() => {
             if (identifier.includes('admin')) {
                navigate('/admin/dashboard');
@@ -50,6 +56,16 @@ export const Login: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  // Restore remembered identifier on mount
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('remember_identifier');
+      const savedChecked = localStorage.getItem('remember_checked');
+      if (saved) setIdentifier(saved);
+      if (savedChecked === '1') setRememberMe(true);
+    } catch (_) {}
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center items-center p-4" style={{
@@ -94,6 +110,13 @@ export const Login: React.FC = () => {
               required 
               disabled={isLoading}
             />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <label className="inline-flex items-center text-sm cursor-pointer">
+              <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />
+              <span className="ml-2 text-sm text-gray-700">Ghi nhớ đăng nhập</span>
+            </label>
           </div>
 
           <button type="submit" disabled={isLoading} className="w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all transform disabled:opacity-60" style={{ backgroundColor: appContent.authPrimaryColor || '#3b82f6' }}>
