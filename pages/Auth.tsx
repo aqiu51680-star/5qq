@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../scr/context/AppContext';
 import { Role } from '../types';
+import { ToastContainer, ToastMessage } from '../components/Toast';
 
 export const Login: React.FC = () => {
   const [identifier, setIdentifier] = useState('');
@@ -11,23 +12,40 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const addToast = (message: string, type: 'success' | 'error' | 'info') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type, duration: 3000 }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     try {
         const success = await login(identifier, password);
         if (success) {
-          if (identifier.includes('admin')) {
-             navigate('/admin/dashboard');
-          } else {
-             navigate('/user/home');
-          }
+          addToast('Đăng nhập thành công!', 'success');
+          setTimeout(() => {
+            if (identifier.includes('admin')) {
+               navigate('/admin/dashboard');
+            } else {
+               navigate('/user/home');
+            }
+          }, 500);
         } else {
-          setError('Tên đăng nhập hoặc mật khẩu không chính xác');
+          const msg = 'Tên đăng nhập hoặc mật khẩu không chính xác';
+          setError(msg);
+          addToast(msg, 'error');
         }
     } catch (e: any) {
         setError(e.message);
+        addToast(e.message, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -40,6 +58,7 @@ export const Login: React.FC = () => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
     }}>
+      <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className={`w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 space-y-8 ${appContent.authBgImage ? 'border-2 border-white/70 backdrop-blur-lg' : 'border border-gray-100'}`}>
         <div className="text-center">
           <h1 className={`font-bold mb-3 ${appContent.authTitleSize || 'text-4xl'}`} style={{ color: appContent.authTitleColor || '#1e3a8a' }}>
@@ -98,23 +117,58 @@ export const Register: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const addToast = (message: string, type: 'success' | 'error' | 'info') => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type, duration: 3000 }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    // Validate password match
     if (formData.password !== formData.confirmPassword) {
-      setError("Mật khẩu không khớp");
+      const msg = "Mật khẩu không khớp";
+      setError(msg);
+      addToast(msg, 'error');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate referral code is required and is 6 digits
+    if (!formData.referralCode || !formData.referralCode.trim()) {
+      const msg = "Mã giới thiệu là bắt buộc";
+      setError(msg);
+      addToast(msg, 'error');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!/^\d{6}$/.test(formData.referralCode.trim())) {
+      const msg = "Mã giới thiệu phải là 6 chữ số";
+      setError(msg);
+      addToast(msg, 'error');
       setIsLoading(false);
       return;
     }
 
     try {
       await register(formData);
-      navigate('/auth');
+      addToast('Đăng ký tài khoản thành công!', 'success');
+      setTimeout(() => {
+        navigate('/auth');
+      }, 500);
     } catch (e: any) {
-      setError(e.message);
+      const msg = e.message || 'Lỗi đăng ký tài khoản';
+      setError(msg);
+      addToast(msg, 'error');
       setIsLoading(false);
     }
   };
@@ -126,6 +180,7 @@ export const Register: React.FC = () => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
     }}>
+      <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className={`w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 space-y-8 ${appContent.authBgImage ? 'border-2 border-white/70 backdrop-blur-lg' : 'border border-gray-100'}`}>
         <div className="text-center">
           <h1 className="text-3xl font-bold" style={{ color: appContent.authPrimaryColor || '#3b82f6' }}>Tạo tài khoản</h1>
@@ -136,18 +191,35 @@ export const Register: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="text" placeholder="Tên đăng nhập" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
+            value={formData.username}
             onChange={e => setFormData({...formData, username: e.target.value})} disabled={isLoading} required />
           <input type="text" placeholder="Họ và tên" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
+            value={formData.fullName}
             onChange={e => setFormData({...formData, fullName: e.target.value})} disabled={isLoading} required />
           <input type="text" placeholder="Số điện thoại" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
+            value={formData.phoneNumber}
             onChange={e => setFormData({...formData, phoneNumber: e.target.value})} disabled={isLoading} required />
           <input type="password" placeholder="Mật khẩu" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
+            value={formData.password}
             onChange={e => setFormData({...formData, password: e.target.value})} disabled={isLoading} required />
           <input type="password" placeholder="Xác nhận mật khẩu" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
+            value={formData.confirmPassword}
             onChange={e => setFormData({...formData, confirmPassword: e.target.value})} disabled={isLoading} required />
           
-          <input type="text" placeholder="Mã giới thiệu (Tuỳ chọn)" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
-            onChange={e => setFormData({...formData, referralCode: e.target.value})} disabled={isLoading} />
+          <div>
+            <label className="block text-sm font-bold text-gray-800 mb-2">Mã giới thiệu (6 chữ số) <span className="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              placeholder="Nhập mã 6 chữ số" 
+              maxLength={6}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all bg-gray-50 hover:bg-white" 
+              value={formData.referralCode}
+              onChange={e => setFormData({...formData, referralCode: e.target.value.replace(/\D/g, '')})} 
+              disabled={isLoading}
+              required 
+            />
+            <p className="text-xs text-gray-500 mt-1">Mã giới thiệu do admin cấp. Vui lòng nhập đúng 6 chữ số.</p>
+          </div>
 
           <button type="submit" disabled={isLoading} className="w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all transform disabled:opacity-60" style={{ backgroundColor: appContent.authPrimaryColor || '#3b82f6' }}>
             {isLoading ? 'Đang tạo tài khoản...' : 'Đăng ký'}

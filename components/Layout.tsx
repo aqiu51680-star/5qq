@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { Home, History, PlayCircle, HelpCircle, User, LogOut, Settings, CreditCard, Users, FileText, Key, Globe, Bell, Package, Box } from 'lucide-react';
+import { Home, History, PlayCircle, HelpCircle, User, LogOut, Settings, CreditCard, Users, FileText, Key, Globe, Bell, Package, Box, ChevronLeft, Menu, X } from 'lucide-react';
 import { useApp } from '../scr/context/AppContext';
 import { TRANSLATIONS } from '../constants';
 
@@ -84,15 +84,31 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const { logout, language, setLanguage, transactions } = useApp();
   const t = TRANSLATIONS[language];
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   
   // Calculate Pending Transactions for Badge
   const pendingCount = transactions.filter(t => t.status === 'PENDING').length;
   
   const isActive = (path: string) => location.pathname === path;
 
+  // Get current page title for mobile
+  const getPageTitle = (): string => {
+    if (location.pathname.includes('/admin/dashboard')) return t.admin_dashboard;
+    if (location.pathname.includes('/admin/users')) return t.admin_users;
+    if (location.pathname.includes('/admin/transactions')) return t.admin_transactions;
+    if (location.pathname.includes('/admin/products')) return 'Product Catalog';
+    if (location.pathname.includes('/admin/orders')) return t.admin_orders;
+    if (location.pathname.includes('/admin/invites')) return t.admin_invites;
+    if (location.pathname.includes('/admin/settings')) return t.admin_settings;
+    return t.admin_panel;
+  };
+
   const SidebarItem = ({ path, icon: Icon, label, badge }: { path: string, icon: any, label: string, badge?: number }) => (
     <button
-      onClick={() => navigate(path)}
+      onClick={() => {
+        navigate(path);
+        setMobileMenuOpen(false);
+      }}
       className={`flex items-center w-full px-4 py-3 space-x-3 rounded-lg transition-colors relative ${
         isActive(path) 
         ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
@@ -145,8 +161,17 @@ export const AdminLayout: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
-        <header className="bg-white dark:bg-gray-800 shadow-sm h-16 flex items-center justify-between px-6 md:px-8">
-           <div className="md:hidden font-bold text-lg">{t.admin_panel}</div>
+        <header className="bg-white dark:bg-gray-800 shadow-sm h-16 flex items-center justify-between px-6 md:px-8 sticky top-0 z-40">
+           <div className="flex items-center space-x-4 md:hidden">
+             <button
+               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+               className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+             >
+               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+             </button>
+             <span className="font-bold text-lg">{getPageTitle()}</span>
+           </div>
+           <div className="hidden md:block md:font-bold md:text-lg">{t.admin_panel}</div>
            <div className="flex items-center space-x-4">
              {/* Admin Language Switcher */}
              <div className="flex space-x-1 mr-4">
@@ -167,6 +192,29 @@ export const AdminLayout: React.FC = () => {
              <span className="font-medium dark:text-white">Admin</span>
            </div>
         </header>
+
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <nav className="px-4 py-4 space-y-2">
+              <SidebarItem path="/admin/dashboard" icon={Home} label={t.admin_dashboard} />
+              <SidebarItem path="/admin/users" icon={Users} label={t.admin_users} />
+              <SidebarItem path="/admin/transactions" icon={CreditCard} label={t.admin_transactions} badge={pendingCount} />
+              <SidebarItem path="/admin/products" icon={Box} label="Product Catalog" />
+              <SidebarItem path="/admin/orders" icon={FileText} label={t.admin_orders} />
+              <SidebarItem path="/admin/invites" icon={Key} label={t.admin_invites} />
+              <SidebarItem path="/admin/settings" icon={Settings} label={t.admin_settings} />
+              <button 
+                onClick={() => { logout(); navigate('/auth'); setMobileMenuOpen(false); }}
+                className="flex items-center space-x-2 text-red-500 hover:text-red-600 transition-colors w-full px-4 py-3"
+              >
+                <LogOut size={20} />
+                <span>{t.logout}</span>
+              </button>
+            </nav>
+          </div>
+        )}
+        
         <div className="p-6 md:p-8">
           <Outlet />
         </div>
