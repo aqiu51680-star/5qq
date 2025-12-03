@@ -3,6 +3,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Include Tailwind layers so classes are available in production build */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Custom scrollbar for admin panel */
 ::-webkit-scrollbar {
   width: 6px;
