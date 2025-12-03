@@ -6,8 +6,9 @@ import { TRANSLATIONS } from '../../constants';
 import { Bell, CreditCard, Wallet, ChevronRight, Copy, Shield, Settings as SettingsIcon, LogOut, CheckCircle, Smartphone, User, Lock, ArrowUpCircle, ArrowDownCircle, Globe, Clock, AlertCircle, MapPin, FileText, ChevronLeft, Save, Eye, EyeOff, HelpCircle, Key, ArrowDown, ArrowUp, Calendar, Filter, X, DollarSign, Package, TrendingUp, MessageCircle, PlayCircle, History as HistoryIcon, List } from 'lucide-react';
 
 export const UserHome: React.FC = () => {
-  const { language, currentUser, levelConfigs, systemConfig, appContent, formatPrice } = useApp();
-  const t = TRANSLATIONS[language];
+    const { currentUser, levelConfigs, systemConfig, appContent, formatPrice } = useApp();
+    const language = 'vi';
+    const t = TRANSLATIONS[language];
   const [showPopup, setShowPopup] = useState(appContent.popupEnabled);
 // --- BẮT ĐẦU ĐOẠN MÃ CẦN THÊM ---
 // Lắng nghe thay đổi từ Admin để cập nhật Popup ngay lập tức
@@ -147,8 +148,9 @@ useEffect(() => {
 };
 
 export const GrabOrder: React.FC = () => {
-  const { language, grabOrder, confirmOrder, cancelOrder, currentUser, levelConfigs, systemConfig, formatPrice, appContent, orders } = useApp();
-  const t = TRANSLATIONS[language];
+    const { grabOrder, confirmOrder, cancelOrder, currentUser, levelConfigs, systemConfig, formatPrice, appContent, orders } = useApp();
+    const language = 'vi';
+    const t = TRANSLATIONS[language];
   const [isProcessing, setIsProcessing] = useState(false);
   const [modalStage, setModalStage] = useState<'IDLE' | 'MATCHING' | 'FOUND' | 'SUBMITTING' | 'SUCCESS'>('IDLE');
   const [currentOrder, setCurrentOrder] = useState<any>(null);
@@ -279,17 +281,17 @@ export const GrabOrder: React.FC = () => {
           <button 
             onClick={handleStartGrab} 
             disabled={isProcessing}
-            className={`w-32 h-32 rounded-full shadow-2xl flex items-center justify-center text-white transform transition-all active:scale-95 border-4 border-white/20 ${isProcessing ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-br from-gold-400 to-gold-600 hover:scale-110 hover:shadow-gold-500/50 animate-bounce-slight'}`}
+            className={`w-32 h-32 rounded-full shadow-2xl flex items-center justify-center text-white transform transition-all active:scale-95 border-4 border-white/20 ${isProcessing ? 'bg-gray-400 cursor-not-allowed animate-none' : 'bg-gradient-to-br from-gold-400 to-gold-600 hover:scale-110 hover:shadow-gold-500/50 animate-bounce-slight animate-fade-in'}`}
           >
              {isProcessing ? (
-                 <div className="flex flex-col items-center">
+                 <div className="flex flex-col items-center animate-pulse">
                      <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-2"></div>
-                     <span className="text-xs font-bold">Processing</span>
+                     <span className="text-xs font-bold animate-pulse">{t.processing}</span>
                  </div>
              ) : (
-                 <div className="flex flex-col items-center">
-                     <PlayCircle size={48} strokeWidth={2} className="mb-1" />
-                     <span className="text-sm font-bold uppercase tracking-widest">{t.start}</span>
+                 <div className="flex flex-col items-center animate-scale-in">
+                     <PlayCircle size={48} strokeWidth={2} className="mb-1 animate-bounce-slight" />
+                     <span className="text-sm font-bold uppercase tracking-widest animate-fade-in">{t.start}</span>
                  </div>
              )}
           </button>
@@ -304,79 +306,79 @@ export const GrabOrder: React.FC = () => {
                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-500/10 to-transparent"></div>
 
                {modalStage === 'MATCHING' && (
-                 <div className="text-center py-12">
-                   <div className="relative w-24 h-24 mx-auto mb-6">
-                      <div className="absolute inset-0 border-4 border-blue-200 rounded-full animate-ping opacity-75"></div>
-                      <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                      <SearchIcon className="absolute inset-0 m-auto text-blue-600" size={32} />
-                   </div>
-                   <h3 className="text-xl font-bold animate-pulse dark:text-white mb-2">{t.matching}</h3>
-                   <p className="text-sm text-gray-500">Connecting to global merchants...</p>
-                 </div>
+                      <div className="text-center py-12 animate-fade-in">
+                         <div className="relative w-24 h-24 mx-auto mb-6">
+                             <div className="absolute inset-0 border-4 border-blue-200 rounded-full animate-ping opacity-75"></div>
+                             <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                             <SearchIcon className="absolute inset-0 m-auto text-blue-600 animate-bounce-slight" size={32} />
+                         </div>
+                         <h3 className="text-xl font-bold animate-pulse dark:text-white mb-2">{t.matching}</h3>
+                         <p className="text-sm text-gray-500 animate-pulse">{t.waiting_system}</p>
+                      </div>
                )}
 
                {modalStage === 'FOUND' && currentOrder && (
-                 <div className="space-y-5 relative z-10">
-                   <div className="text-center">
-                     <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">{t.matched}</h3>
-                     <p className="text-xs text-gray-400 font-mono tracking-wider bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded inline-block">{currentOrder.id}</p>
-                   </div>
+                      <div className="space-y-5 relative z-10 animate-fade-in">
+                         <div className="text-center animate-scale-in">
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-1 animate-bounce-slight">{t.matched}</h3>
+                            <p className="text-xs text-gray-400 font-mono tracking-wider bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded inline-block animate-fade-in">{currentOrder.id}</p>
+                         </div>
                    
-                   <div className="bg-white dark:bg-gray-700 p-4 rounded-2xl border border-gray-100 dark:border-gray-600 shadow-sm">
-                      <div className="w-full h-48 bg-white rounded-xl overflow-hidden mb-4 shadow-inner flex items-center justify-center p-2">
-                          <img src={currentOrder.productImage} className="max-w-full max-h-full object-contain" alt="Product" />
-                      </div>
-                      <h4 className="font-bold text-gray-800 dark:text-white text-center mb-4 line-clamp-2 h-10 px-2">{currentOrder.productName}</h4>
+                         <div className="bg-white dark:bg-gray-700 p-4 rounded-2xl border border-gray-100 dark:border-gray-600 shadow-sm animate-scale-in">
+                             <div className="w-full h-48 bg-white rounded-xl overflow-hidden mb-4 shadow-inner flex items-center justify-center p-2 animate-fade-in">
+                                  <img src={currentOrder.productImage} className="max-w-full max-h-full object-contain animate-scale-in" alt="Product" />
+                             </div>
+                             <h4 className="font-bold text-gray-800 dark:text-white text-center mb-4 line-clamp-2 h-10 px-2 animate-fade-in">{currentOrder.productName}</h4>
                       
-                      <div className="space-y-3 text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-xl">
-                         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-2">
-                            <span className="text-gray-500">{t.amount}</span>
-                            <span className="font-bold text-lg dark:text-white">{formatPrice(currentOrder.amount || 0)}</span>
+                             <div className="space-y-3 text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-xl animate-fade-in">
+                                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-2">
+                                     <span className="text-gray-500">{t.amount}</span>
+                                     <span className="font-bold text-lg dark:text-white">{formatPrice(currentOrder.amount || 0)}</span>
+                                 </div>
+                                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-2">
+                                     <span className="text-gray-500">{t.quantity}</span>
+                                     <span className="font-bold dark:text-white">x1</span>
+                                 </div>
+                                 <div className="flex justify-between items-center">
+                                     <span className="text-gray-500">{t.commission}</span>
+                                     <span className="font-bold text-xl text-green-500 animate-bounce-slight">+{formatPrice(currentOrder.commission || 0)}</span>
+                                 </div>
+                             </div>
                          </div>
-                         <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-2">
-                            <span className="text-gray-500">{t.quantity}</span>
-                            <span className="font-bold dark:text-white">x1</span>
-                         </div>
-                         <div className="flex justify-between items-center">
-                            <span className="text-gray-500">{t.commission}</span>
-                            <span className="font-bold text-xl text-green-500">+{formatPrice(currentOrder.commission || 0)}</span>
+
+                         <div className="grid grid-cols-2 gap-3 mt-2">
+                             <button onClick={handleCancelOrder} className="w-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 py-3.5 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors animate-fade-in">{t.cancel}</button>
+                             <button onClick={handleSubmitOrder} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center animate-bounce-slight animate-fade-in">
+                                  {t.confirm_delivery}
+                             </button>
                          </div>
                       </div>
-                   </div>
-
-                   <div className="grid grid-cols-2 gap-3 mt-2">
-                      <button onClick={handleCancelOrder} className="w-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 py-3.5 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">{t.cancel}</button>
-                      <button onClick={handleSubmitOrder} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center">
-                          {t.confirm_delivery}
-                      </button>
-                   </div>
-                 </div>
                )}
 
                {modalStage === 'SUBMITTING' && (
-                  <div className="space-y-6 py-12 text-center">
-                    <div className="w-24 h-24 mx-auto relative">
-                       <div className="absolute inset-0 rounded-full border-4 border-blue-100"></div>
+                  <div className="space-y-6 py-12 text-center animate-fade-in">
+                    <div className="w-24 h-24 mx-auto relative animate-pulse">
+                       <div className="absolute inset-0 rounded-full border-4 border-blue-100 animate-ping"></div>
                        <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
-                       <div className="absolute inset-0 flex items-center justify-center">
-                           <span className="text-xs font-bold text-blue-600">Sending</span>
+                       <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
+                           <span className="text-xs font-bold text-blue-600 animate-pulse">{t.processing}</span>
                        </div>
                     </div>
                     <div>
-                        <h3 className="font-bold text-xl dark:text-white mb-2">{t.submit_order}</h3>
+                        <h3 className="font-bold text-xl dark:text-white mb-2 animate-fade-in">{t.submit_order}</h3>
                         <p className="text-sm text-gray-500 animate-pulse">{t.waiting_system}</p>
                     </div>
                   </div>
                )}
 
                {modalStage === 'SUCCESS' && (
-                 <div className="text-center py-12 animate-scale-in">
-                   <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-200">
-                       <CheckCircle size={48} className="text-green-500 animate-bounce-slight" />
-                   </div>
-                   <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t.success}</h2>
-                   <p className="text-green-600 font-medium bg-green-50 inline-block px-4 py-1 rounded-full">{t.success_msg}</p>
-                 </div>
+                                 <div className="text-center py-12 animate-scale-in animate-fade-in">
+                                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-200 animate-bounce-slight animate-fade-in">
+                                             <CheckCircle size={48} className="text-green-500 animate-bounce-slight animate-scale-in" />
+                                     </div>
+                                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 animate-fade-in">{t.success}</h2>
+                                     <p className="text-green-600 font-medium bg-green-50 inline-block px-4 py-1 rounded-full animate-fade-in animate-bounce-slight">{t.success_msg}</p>
+                                 </div>
                )}
             </div>
          </div>
