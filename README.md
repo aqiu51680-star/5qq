@@ -76,3 +76,15 @@ vercel --prod
 If you'd like, I can:
 - Walk you through setting the variables in the Vercel Dashboard step-by-step, or
 - Provide the exact CLI commands for your environment.
+
+## Database migration (typography fields)
+
+If you upgraded from an earlier schema, the admin UI may send new typography fields (popup title/text color, font family, etc.). To persist these fields you must add columns to the `app_content` table. A migration script is included at `scripts/migrations/001_add_app_content_typography.sql`.
+
+Steps to apply:
+
+1. Open your Supabase project → **Database** → **SQL Editor**.
+2. Paste the contents of `scripts/migrations/001_add_app_content_typography.sql` and run it.
+3. Confirm `app_content` now has the new columns (Table Editor → `app_content`).
+
+After applying the migration, admin saves for popup and typography settings should persist normally.
