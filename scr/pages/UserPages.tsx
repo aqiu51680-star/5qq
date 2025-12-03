@@ -105,12 +105,15 @@ useEffect(() => {
       </div>
 
       {/* Marquee */}
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 flex items-center space-x-3 overflow-hidden">
-        <Bell size={16} className="text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
-                <div className="whitespace-nowrap text-sm text-yellow-800 dark:text-yellow-200">
-                    <span className="inline-block animate-[marquee_10s_linear_infinite] px-2">{appContent.marqueeText}</span>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 flex items-center space-x-3 overflow-hidden">
+                <Bell size={16} className="text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                <div className="flex-1 overflow-hidden">
+                    <div className="inline-block whitespace-nowrap animate-[marquee_12s_linear_infinite] text-sm text-yellow-800 dark:text-yellow-200">
+                        <span className="inline-block mr-8">{appContent.marqueeText}</span>
+                        <span className="inline-block mr-8">{appContent.marqueeText}</span>
+                    </div>
                 </div>
-      </div>
+            </div>
 
       {/* Banner */}
       <div className="p-4">

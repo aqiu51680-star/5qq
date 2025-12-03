@@ -415,7 +415,7 @@ export const AdminUsers: React.FC = () => {
                                <h4 className="font-bold text-sm mb-3 dark:text-white text-blue-800 dark:text-blue-300">Account Level & Limits</h4>
                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                    <div>
-                                       <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Level</label>
+                                       <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Gói</label>
                                        <input type="number" className="w-full border p-2 rounded dark:bg-gray-700 dark:text-white mt-1" value={editingUser.level} onChange={e => setEditingUser({...editingUser, level: Number(e.target.value)})} />
                                    </div>
                                    <div>

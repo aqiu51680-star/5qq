@@ -23,3 +23,21 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8; 
 }
+/* Marquee animation keyframes */
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Tailwind utility for marquee animation */
+.animate-\[marquee_10s_linear_infinite\] {
+  animation: marquee 10s linear infinite;
+}
+
+.animate-\[marquee_12s_linear_infinite\] {
+  animation: marquee 12s linear infinite;
+}
