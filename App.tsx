@@ -2,6 +2,7 @@
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './scr/context/AppContext';
+import { isSupabaseConfigured } from './supabaseClient';
 import { UserLayout, AdminLayout } from './components/Layout';
 import { Login, Register } from './pages/Auth';
 import { UserHome, GrabOrder, UserProfile, HistoryPage, HelpPage, WalletPage, UserInfoPage, BankBindPage, SecurityPage, UserTransactionsPage } from './pages/UserPages';
@@ -78,6 +79,26 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold mb-3 dark:text-white">Configuration Required</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">The application cannot connect to Supabase because the environment variables are not configured.</p>
+          <div className="text-sm text-gray-700 dark:text-gray-200 space-y-2">
+            <p><strong>Required environment variables:</strong></p>
+            <ul className="list-disc pl-5">
+              <li><code>VITE_SUPABASE_URL</code> — your Supabase project URL (e.g. https://xyz.supabase.co)</li>
+              <li><code>VITE_SUPABASE_ANON_KEY</code> — your Supabase anon/public key</li>
+            </ul>
+            <p className="mt-2">If you're deploying to Vercel, add these keys under your Project &gt; Settings &gt; Environment Variables, then redeploy.</p>
+            <p className="mt-2 text-xs text-gray-500">Tip: For local development create a <code>.env.local</code> file at the project root with these values prefixed by <code>VITE_</code>.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AppProvider>
       <HashRouter>
