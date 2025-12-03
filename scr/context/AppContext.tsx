@@ -538,9 +538,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           grab_page_image: c.grabPageImage, grab_page_text: c.grabPageText, grab_page_text_color: c.grabPageTextColor, grab_page_text_size: c.grabPageTextSize, grab_page_font_family: c.grabPageFontFamily, grab_page_font_weight: c.grabPageFontWeight,
           auth_bg_image: c.authBgImage, auth_title: c.authTitle, auth_subtitle: c.authSubtitle, auth_primary_color: c.authPrimaryColor, auth_title_color: c.authTitleColor, auth_title_size: c.authTitleSize, auth_title_font_family: c.authTitleFontFamily, auth_title_font_weight: c.authTitleFontWeight
       };
-      await supabase.from('app_content').upsert({ id: 'default', ...dbData });
+      try {
+        const { data: upserted, error } = await supabase.from('app_content').upsert({ id: 'default', ...dbData }, { returning: 'representation' });
+        if (error) {
+          // eslint-disable-next-line no-console
+          console.error('[AppContext] updateAppContent error:', error);
+          setAdminNotification({ message: `Failed to save content: ${error.message || error}`, type: 'alert', timestamp: Date.now() });
+        } else {
+          // eslint-disable-next-line no-console
+          console.log('[AppContext] updateAppContent upserted:', upserted || dbData);
+        }
+      } catch (e: any) {
         // eslint-disable-next-line no-console
-        console.log('[AppContext] updateAppContent upserted:', dbData);
+        console.error('[AppContext] updateAppContent exception:', e);
+        setAdminNotification({ message: `Failed to save content: ${e?.message || e}`, type: 'alert', timestamp: Date.now() });
+      }
   };
   const addProduct = async (p: any) => { await supabase.from('products').insert({ id: `P-${Date.now()}`, name: p.name, image_url: p.imageUrl, price: p.price, created_at: Date.now() }); };
   const updateProduct = async (p: any) => { await supabase.from('products').update({ name: p.name, image_url: p.imageUrl, price: p.price }).eq('id', p.id); };
