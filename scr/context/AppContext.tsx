@@ -539,14 +539,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           auth_bg_image: c.authBgImage, auth_title: c.authTitle, auth_subtitle: c.authSubtitle, auth_primary_color: c.authPrimaryColor, auth_title_color: c.authTitleColor, auth_title_size: c.authTitleSize, auth_title_font_family: c.authTitleFontFamily, auth_title_font_weight: c.authTitleFontWeight
       };
       try {
-        const { data: upserted, error } = await supabase.from('app_content').upsert({ id: 'default', ...dbData }, { returning: 'representation' });
-        if (error) {
+        // Try upserting; if PostgREST complains about unknown columns (schema cache), remove them and retry.
+        let attemptData: any = { id: 'default', ...dbData };
+        let lastError: any = null;
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const { data: upserted, error } = await supabase.from('app_content').upsert(attemptData, { returning: 'representation' });
+          if (!error) {
+            // eslint-disable-next-line no-console
+            console.log('[AppContext] updateAppContent upserted:', upserted || attemptData);
+            lastError = null;
+            break;
+          }
+          lastError = error;
+          // If PostgREST reports missing column, remove that column from payload and retry
+          if (error && typeof error.message === 'string') {
+            const m = error.message.match(/Could not find the '([^']+)' column/);
+            if (m && m[1]) {
+              const col = m[1];
+              // convert column name to camelCase key used in dbData if present, but attemptData uses snake_case
+              // remove the offending column from attemptData
+              // eslint-disable-next-line no-console
+              console.warn('[AppContext] updateAppContent: removing unknown column from payload and retrying:', col);
+              if (col in attemptData) delete attemptData[col];
+              // also try removing as camelCase key just in case
+              const camel = col.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
+              if (camel in attemptData) delete (attemptData as any)[camel];
+              continue;
+            }
+          }
+          break; // unknown error, break and surface
+        }
+        if (lastError) {
           // eslint-disable-next-line no-console
-          console.error('[AppContext] updateAppContent error:', error);
-          setAdminNotification({ message: `Failed to save content: ${error.message || error}`, type: 'alert', timestamp: Date.now() });
-        } else {
-          // eslint-disable-next-line no-console
-          console.log('[AppContext] updateAppContent upserted:', upserted || dbData);
+          console.error('[AppContext] updateAppContent error after retries:', lastError);
+          setAdminNotification({ message: `Failed to save content: ${lastError.message || lastError}`, type: 'alert', timestamp: Date.now() });
         }
       } catch (e: any) {
         // eslint-disable-next-line no-console
