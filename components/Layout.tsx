@@ -4,6 +4,7 @@ import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { Home, History, PlayCircle, HelpCircle, User, LogOut, Settings, CreditCard, Users, FileText, Key, Globe, Bell, Package, Box, ChevronLeft, Menu, X } from 'lucide-react';
 import { useApp } from '../scr/context/AppContext';
 import { TRANSLATIONS } from '../constants';
+import { playNotificationSoundDouble } from '../utils/notification';
 
 // Simple Notification Toast Component
 const NotificationToast = () => {
@@ -11,6 +12,13 @@ const NotificationToast = () => {
     
     useEffect(() => {
         if (adminNotification) {
+            // Play notification sound when admin notification arrives
+            try {
+                playNotificationSoundDouble();
+            } catch (e) {
+                console.log('Could not play notification sound:', e);
+            }
+            
             const timer = setTimeout(() => {
                 clearAdminNotification();
             }, 5000); // Hide after 5 seconds

@@ -218,7 +218,14 @@ export const Register: React.FC = () => {
               disabled={isLoading}
               required 
             />
-            <p className="text-xs text-gray-500 mt-1">Mã giới thiệu do admin cấp. Vui lòng nhập đúng 6 chữ số.</p>
+            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs text-blue-800 font-medium">ℹ️ Hướng dẫn:</p>
+              <ul className="text-xs text-blue-700 mt-1 space-y-1 ml-3">
+                <li>• Mã giới thiệu do admin cấp cho bạn</li>
+                <li>• Vui lòng nhập đúng 6 chữ số (ví dụ: 123456)</li>
+                <li>• Không được để trống trường này</li>
+              </ul>
+            </div>
           </div>
 
           <button type="submit" disabled={isLoading} className="w-full text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all transform disabled:opacity-60" style={{ backgroundColor: appContent.authPrimaryColor || '#3b82f6' }}>

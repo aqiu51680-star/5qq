@@ -195,6 +195,22 @@ export const AdminUsers: React.FC = () => {
     return lastOnline > fiveMinutesAgo;
   };
 
+  // Helper to format online time duration
+  const getOnlineTimeDuration = (lastOnline?: number): string => {
+    if (!lastOnline) return 'Chưa bao giờ';
+    const now = Date.now();
+    const diffMs = now - lastOnline;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return 'Vừa xong';
+    if (diffMins < 60) return `${diffMins} phút trước`;
+    if (diffHours < 24) return `${diffHours} giờ trước`;
+    if (diffDays < 7) return `${diffDays} ngày trước`;
+    return new Date(lastOnline).toLocaleDateString('vi-VN');
+  };
+
   const addSpecificOrder = () => {
       if(!editingUser) return;
       const newOrder: SpecificOrderConfig = { orderIndex: 1, amount: 100000, commissionRate: 0.1, productName: '', productImage: '' };
@@ -278,6 +294,9 @@ export const AdminUsers: React.FC = () => {
                                 {hasPendingTransactions && <AlertCircle size={14} className="text-yellow-500 animate-pulse" />}
                            </div>
                            <p className="text-xs text-gray-400">{user.phoneNumber}</p>
+                           <p className={`text-xs font-medium ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                             {isOnline ? '🟢 Online' : `⏱️ ${getOnlineTimeDuration(user.lastOnline)}`}
+                           </p>
                            <div className="flex space-x-1 mt-1">
                                {user.isFake && <span className="text-[10px] bg-purple-100 text-purple-600 px-1 rounded border border-purple-200">FAKE</span>}
                                {user.isOrderFrozen && <span className="text-[10px] bg-red-100 text-red-600 px-1 rounded border border-red-200 flex items-center"><Ban size={10} className="mr-0.5"/> FROZEN</span>}
